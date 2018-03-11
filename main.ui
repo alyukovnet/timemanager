@@ -65,43 +65,42 @@
      <height>20</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menu_neural">
     <property name="title">
      <string>&amp;Нейронная сеть</string>
     </property>
-    <addaction name="action"/>
-    <addaction name="action_2"/>
+    <addaction name="action_teach"/>
+    <addaction name="action_clear"/>
    </widget>
-   <widget class="QMenu" name="menu_2">
+   <widget class="QMenu" name="menu_file">
     <property name="title">
      <string>&amp;Файл</string>
     </property>
-    <addaction name="separator"/>
-    <addaction name="action_6"/>
+    <addaction name="action_exit"/>
    </widget>
-   <widget class="QMenu" name="menu_3">
+   <widget class="QMenu" name="menu_queue">
     <property name="title">
      <string>&amp;Очередь</string>
     </property>
-    <addaction name="action_7"/>
+    <addaction name="action_qclear"/>
    </widget>
-   <widget class="QMenu" name="menu_4">
+   <widget class="QMenu" name="menu_help">
     <property name="title">
      <string>&amp;Справка</string>
     </property>
     <addaction name="action_Qt"/>
    </widget>
-   <addaction name="menu_2"/>
-   <addaction name="menu"/>
-   <addaction name="menu_3"/>
-   <addaction name="menu_4"/>
+   <addaction name="menu_file"/>
+   <addaction name="menu_neural"/>
+   <addaction name="menu_queue"/>
+   <addaction name="menu_help"/>
   </widget>
-  <action name="action">
+  <action name="action_teach">
    <property name="text">
     <string>&amp;Обучить</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_clear">
    <property name="text">
     <string>О&amp;чистить</string>
    </property>
@@ -116,12 +115,12 @@
     <string>Выход</string>
    </property>
   </action>
-  <action name="action_6">
+  <action name="action_exit">
    <property name="text">
     <string>&amp;Выход</string>
    </property>
   </action>
-  <action name="action_7">
+  <action name="action_qclear">
    <property name="text">
     <string>&amp;Очистить</string>
    </property>
@@ -129,6 +128,11 @@
   <action name="action_Qt">
    <property name="text">
     <string>&amp;О Qt</string>
+   </property>
+  </action>
+  <action name="actionada">
+   <property name="text">
+    <string>ada</string>
    </property>
   </action>
  </widget>
