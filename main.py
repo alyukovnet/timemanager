@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui'
+# Form implementation generated from reading ui file 'ui/main.ui'
 #
 # Created by: PyQt5 UI code generator 5.10
 #
@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(732, 242)
+        MainWindow.resize(700, 155)
         MainWindow.setMinimumSize(QtCore.QSize(700, 0))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
         self.table_area.setWidgetResizable(True)
         self.table_area.setObjectName("table_area")
         self.table_contents = TableContents()
-        self.table_contents.setGeometry(QtCore.QRect(0, 0, 712, 155))
+        self.table_contents.setGeometry(QtCore.QRect(0, 0, 680, 68))
         self.table_contents.setObjectName("table_contents")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.table_contents)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -43,7 +43,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
-        self.menuBar.setGeometry(QtCore.QRect(0, 0, 732, 20))
+        self.menuBar.setGeometry(QtCore.QRect(0, 0, 700, 20))
         self.menuBar.setObjectName("menuBar")
         self.menu_neural = QtWidgets.QMenu(self.menuBar)
         self.menu_neural.setObjectName("menu_neural")
