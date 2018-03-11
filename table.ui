@@ -64,11 +64,8 @@
     <layout class="QVBoxLayout" name="buttons_layout">
      <item>
       <widget class="QPushButton" name="teach">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
        <property name="text">
-        <string>Обучить</string>
+        <string>Сохранить</string>
        </property>
       </widget>
      </item>
