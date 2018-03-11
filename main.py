@@ -18,9 +18,8 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
         self.table_area = QtWidgets.QScrollArea(self.centralwidget)
-        self.table_area.setWidgetResizable(True)
         self.table_area.setObjectName("table_area")
-        self.table_contents = TableContents()
+        self.table_contents = QtWidgets.QWidget()
         self.table_contents.setGeometry(QtCore.QRect(0, 0, 680, 68))
         self.table_contents.setObjectName("table_contents")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.table_contents)
@@ -100,4 +99,3 @@ class Ui_MainWindow(object):
         self.actionada.setText(_translate("MainWindow", "ada"))
 
 from head import Head
-from tablecontents import TableContents
