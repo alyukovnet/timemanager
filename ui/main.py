@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QScrollArea, QFrame, QStatusBar, QMenuBar, QMenu,
                              QAction, QGridLayout)
-from head import HeadWidget
+from .head import HeadWidget
 # from table import TableWidget
 
 
