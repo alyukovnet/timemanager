@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QComboBox, QHBoxLayout, QLabel, QDateEdit,
                              QDoubleSpinBox, QTimeEdit, QPushButton)
 from datetime import date, timedelta
+from core.data import school_lessons, work_types
 
 
 class HeadWidget(QWidget):
@@ -12,10 +13,10 @@ class HeadWidget(QWidget):
         # Widgets
         self.work_type = QComboBox(self)
         self.work_type.setToolTip('Тип работы')
-        # self.work_type.addItems()
+        self.work_type.addItems(work_types)
         self.lesson = QComboBox(self)
         self.lesson.setToolTip('Урок')
-        # self.lesson.addItems()
+        self.lesson.addItems(school_lessons)
         actuality_label = QLabel('Дата начала', self)
         self.actuality = QDateEdit(self)
         self.actuality.setDate(date.today())
