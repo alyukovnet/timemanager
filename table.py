@@ -1,62 +1,43 @@
-# -*- coding: utf-8 -*-
+from PyQt5.QtWidgets import (QWidget, QLineEdit, QGridLayout, QDateEdit, QVBoxLayout, QPushButton,
+                             QDoubleSpinBox, QCheckBox)
+from datetime import date
 
-# Form implementation generated from reading ui file 'table.ui'
-#
-# Created by: PyQt5 UI code generator 5.10
-#
-# WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+class TableWidget(QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.resize(700, 72)
+        self.setMinimumWidth(700)
 
-class Ui_table(object):
-    def setupUi(self, table):
-        table.setObjectName("table")
-        table.resize(700, 72)
-        table.setMinimumSize(QtCore.QSize(700, 0))
-        self.gridLayout = QtWidgets.QGridLayout(table)
-        self.gridLayout.setObjectName("gridLayout")
-        self.lesson = QtWidgets.QLineEdit(table)
-        self.lesson.setText("")
-        self.lesson.setObjectName("lesson")
-        self.gridLayout.addWidget(self.lesson, 0, 1, 1, 1)
-        self.deadline = QtWidgets.QDateEdit(table)
+        # Widgets
+        self.lesson = QLineEdit(self)
+        self.lesson.setToolTip('Описание предмета')
+        self.deadline = QDateEdit(self)
+        self.deadline.setToolTip('Дата окончания')
         self.deadline.setEnabled(False)
-        self.deadline.setDateTime(QtCore.QDateTime(QtCore.QDate(2017, 9, 1), QtCore.QTime(0, 0, 0)))
-        self.deadline.setMinimumDateTime(QtCore.QDateTime(QtCore.QDate(2017, 9, 1), QtCore.QTime(0, 0, 0)))
-        self.deadline.setObjectName("deadline")
-        self.gridLayout.addWidget(self.deadline, 0, 3, 1, 1)
-        self.buttons_layout = QtWidgets.QVBoxLayout()
-        self.buttons_layout.setObjectName("buttons_layout")
-        self.teach = QtWidgets.QPushButton(table)
-        self.teach.setObjectName("teach")
-        self.buttons_layout.addWidget(self.teach)
-        self.delete_2 = QtWidgets.QPushButton(table)
-        self.delete_2.setObjectName("delete_2")
-        self.buttons_layout.addWidget(self.delete_2)
-        self.gridLayout.addLayout(self.buttons_layout, 0, 5, 1, 1)
-        self.result = QtWidgets.QDoubleSpinBox(table)
-        self.result.setObjectName("result")
-        self.gridLayout.addWidget(self.result, 0, 4, 1, 1)
-        self.done = QtWidgets.QCheckBox(table)
-        self.done.setText("")
-        self.done.setObjectName("done")
-        self.gridLayout.addWidget(self.done, 0, 0, 1, 1)
+        self.deadline.setDate(date.today())
+        self.deadline.setMinimumDate(date(2017, 9, 1))
+        self.save_button = QPushButton('Сохранить', self)
+        self.delete_button = QPushButton('Удалить', self)
+        self.result = QDoubleSpinBox(self)
+        self.result.setToolTip('Результат')
+        self.done = QCheckBox(self)
+        self.done.setToolTip('Задача выполнена')
 
-        self.retranslateUi(table)
-        QtCore.QMetaObject.connectSlotsByName(table)
-        table.setTabOrder(self.done, self.lesson)
-        table.setTabOrder(self.lesson, self.deadline)
-        table.setTabOrder(self.deadline, self.result)
-        table.setTabOrder(self.result, self.teach)
-        table.setTabOrder(self.teach, self.delete_2)
+        # Layouts
+        grid_layout = QGridLayout(self)
+        grid_layout.addWidget(self.lesson, 0, 1)
+        grid_layout.addWidget(self.deadline, 0, 3)
+        buttons_layout = QVBoxLayout()
+        buttons_layout.addWidget(self.save_button)
+        buttons_layout.addWidget(self.delete_button)
+        grid_layout.addLayout(buttons_layout, 0, 5)
+        grid_layout.addWidget(self.result, 0, 4)
+        grid_layout.addWidget(self.done, 0, 0)
 
-    def retranslateUi(self, table):
-        _translate = QtCore.QCoreApplication.translate
-        table.setWindowTitle(_translate("table", "Form"))
-        self.lesson.setToolTip(_translate("table", "Описание предмета"))
-        self.deadline.setToolTip(_translate("table", "Дата окончания"))
-        self.teach.setText(_translate("table", "Сохранить"))
-        self.delete_2.setText(_translate("table", "Удалить"))
-        self.result.setToolTip(_translate("table", "Результат"))
-        self.done.setToolTip(_translate("table", "Задача выполнена"))
-
+        # Tab order
+        self.setTabOrder(self.done, self.lesson)
+        self.setTabOrder(self.lesson, self.deadline)
+        self.setTabOrder(self.deadline, self.result)
+        self.setTabOrder(self.result, self.save_button)
+        self.setTabOrder(self.save_button, self.delete_button)
