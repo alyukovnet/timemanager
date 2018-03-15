@@ -8,7 +8,7 @@ import pickle
 class LessonQueue:
     def __init__(self):
         try:
-            with open('queue', 'rb') as f:
+            with open('data/queue', 'rb') as f:
                 self._data = pickle.load(f)
         except FileNotFoundError:
             self._data = []
@@ -19,7 +19,7 @@ class LessonQueue:
         self._dump()
 
     def _dump(self):
-        with open('queue', 'wb') as file:
+        with open('data/queue', 'wb') as file:
             pickle.dump(self._data, file)
 
     @property
@@ -29,7 +29,7 @@ class LessonQueue:
     def add(self, lesson, work_type, start, end, time, priority):
         inputs = [actual(start), deadline(end), time, priority]
         predict = self.neural.choose_type(lesson).predict(np.array(inputs))[0]
-        line = [lesson, work_type, start, end, time, priority, predict]  # Memory line
+        line = [lesson, work_type, start, end, time, priority, False, predict]  # Memory line
         self._data.append(line)
         self._dump()
 
@@ -49,7 +49,7 @@ class NNStorage:
     def __init__(self):
         # lessons, networks: phys, chem, gum
         try:
-            with open('lessons', 'rb') as f:
+            with open('data/lessons', 'rb') as f:
                 self._lessons = pickle.load(f)
         except FileNotFoundError:
             self._lessons = [[], [], []]
@@ -72,7 +72,7 @@ class NNStorage:
                     net.train(np.array(input_stat), correct_predict)
 
     def _dump(self):
-        with open('lessons', 'wb') as file:
+        with open('data/lessons', 'wb') as file:
             pickle.dump(self._lessons, file)
 
     def add(self, queue_line):
