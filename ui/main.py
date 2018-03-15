@@ -72,7 +72,7 @@ class _MenuBar(QMenuBar):
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.resize(700, 155)
+        self.resize(800, 500)
         self.setWindowTitle('TimeManager')
         self.setMinimumWidth(700)
         self.setCentralWidget(_MainWindowContents(self))

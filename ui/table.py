@@ -11,15 +11,17 @@ class TableWidget(QWidget):
 
         # Widgets
         self.lesson = QLineEdit(self)
+        self.lesson.setReadOnly(True)
         self.lesson.setToolTip('Описание предмета')
         self.deadline = QDateEdit(self)
         self.deadline.setToolTip('Дата окончания')
-        self.deadline.setEnabled(False)
+        self.deadline.setReadOnly(True)
         self.deadline.setDate(date.today())
         self.deadline.setMinimumDate(date(2017, 9, 1))
         self.save_button = QPushButton('Сохранить', self)
         self.delete_button = QPushButton('Удалить', self)
         self.result = QDoubleSpinBox(self)
+        self.result.setSingleStep(0.01)
         self.result.setToolTip('Результат')
         self.done = QCheckBox(self)
         self.done.setToolTip('Задача выполнена')
