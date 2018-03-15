@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QScrollArea, QFrame, QStatusBar, QMenuBar, QMenu,
-                             QAction, QGridLayout)
+                             QAction, QGridLayout, QVBoxLayout, qApp)
 from .head import HeadWidget
 # from table import TableWidget
 
@@ -11,7 +11,7 @@ class _MainWindowContents(QWidget):
         self.table_area.setWidgetResizable(True)
         self.table_contents = QWidget()
         self.table_area.setWidget(self.table_contents)
-        # self.verticalLayout = QVBoxLayout(self.table_contents)
+        self.table_layout = QVBoxLayout(self.table_contents)
         # widget = TableWidget(self.table_contents)
         # self.verticalLayout.addWidget(widget)
         hr = QFrame(self)
@@ -33,16 +33,30 @@ class _MenuBar(QMenuBar):
 
         # Menus
         menu_file = QMenu('Файл', self)
+        menu_file.menuAction().setStatusTip('Тут можно выйти ;)')
         menu_neural = QMenu('Нейронная сеть', self)
+        menu_neural.menuAction().setStatusTip('Настройка работы нейронной сети')
         menu_queue = QMenu('Очередь', self)
+        menu_queue.menuAction().setStatusTip('Управление очередью')
         menu_help = QMenu('Справка', self)
+        menu_help.menuAction().setStatusTip('Ничего полезного ¯\_(ツ)_/¯')
 
         # Actions
         action_exit = QAction('&Выход', main_window)
+        action_exit.triggered.connect(qApp.quit)
+        action_exit.setStatusTip('Выйти отсюда')
         action_teach = QAction('&Обучить', main_window)
+        # action_teach.triggered.connect()
+        action_teach.setStatusTip('Запустить настройку коэффициентов')
         action_clear = QAction('О&чистить', main_window)
+        # action_clear.triggered.connect()
+        action_clear.setStatusTip('Очистить коэффициенты')
         action_queue_clear = QAction('&Очистить', main_window)
+        # action_queue_clear.triggered.connect()
+        action_queue_clear.setStatusTip('Очистить очередь')
         action_about_qt = QAction('&О Qt', main_window)
+        action_about_qt.triggered.connect(qApp.aboutQt)
+        action_about_qt.setStatusTip('Об этом прекрасном фреймворке')
         menu_file.addAction(action_exit)
         menu_neural.addAction(action_teach)
         menu_neural.addAction(action_clear)

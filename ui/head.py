@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import (QWidget, QGridLayout, QComboBox, QHBoxLayout, QLabel, QDateEdit,
-                             QDoubleSpinBox, QTimeEdit, QPushButton)
+                             QDoubleSpinBox, QTimeEdit, QPushButton, QSizePolicy)
 from datetime import date, timedelta
 from core.data import school_lessons, work_types
 
@@ -14,9 +14,11 @@ class HeadWidget(QWidget):
         self.work_type = QComboBox(self)
         self.work_type.setToolTip('Тип работы')
         self.work_type.addItems(work_types)
+        self.work_type.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         self.lesson = QComboBox(self)
         self.lesson.setToolTip('Урок')
         self.lesson.addItems(school_lessons)
+        self.lesson.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
         actuality_label = QLabel('Дата начала', self)
         self.actuality = QDateEdit(self)
         self.actuality.setDate(date.today())
@@ -29,11 +31,14 @@ class HeadWidget(QWidget):
         self.deadline.setToolTip('Дата окончания')
         priority_label = QLabel('Приоритет', self)
         self.priority = QDoubleSpinBox(self)
-        self.priority.setMaximumWidth(80)
+        # self.priority.setMaximumWidth(80)
+        self.priority.setMaximum(1.0)
+        self.priority.setSingleStep(0.01)
+        self.priority.setValue(0.5)
         self.priority.setToolTip('Приоритет')
         time_label = QLabel('Время выполнения', self)
         self.time = QTimeEdit(self)
-        self.time.setMaximumWidth(80)
+        # self.time.setMaximumWidth(80)
         self.time.setDisplayFormat('HH:mm')
         self.time.setToolTip('Время выполнения')
         self.add_button = QPushButton('Добавить', self)
