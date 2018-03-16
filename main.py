@@ -5,8 +5,15 @@ from core.data import school_lessons, work_types
 from datetime import date
 from ui import MainWindow, TableWidget
 from threading import Thread
+from functools import partial
 
 lessons = LessonQueue()
+
+
+def task_checked(lesson, state):
+    lesson[-2] = state
+    lessons.save_data()
+    status_bar.showMessage('Состояние урока изменено успешно', msecs=2000)
 
 
 def add_lesson(lesson):
@@ -15,6 +22,9 @@ def add_lesson(lesson):
     t.deadline.setDate(lesson[3])
     t.result.setValue(lesson[-1])  # TODO: check this
     t.done.setChecked(lesson[-2])
+
+    t.done.clicked.connect(partial(task_checked, lesson))
+
     contents.table_layout.addWidget(t)
     status_bar.showMessage('Новый урок добавлен', msecs=2000)
 
