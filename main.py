@@ -9,17 +9,23 @@ from threading import Thread
 lessons = LessonQueue()
 
 
+def add_lesson(lesson):
+    t = TableWidget(contents.table_contents)
+    t.lesson.setText(f'{school_lessons[lesson[0]]}: {work_types[lesson[1]]}')
+    t.deadline.setDate(lesson[3])
+    t.result.setValue(lesson[-1])  # TODO: check this
+    t.done.setChecked(lesson[-2])
+    contents.table_layout.addWidget(t)
+    status_bar.showMessage('Новый урок добавлен', msecs=2000)
+
+
 def reload_lessons():
     for lesson in lessons.data:
-        t = TableWidget(window.centralWidget().table_contents)
-        t.lesson.setText(f'{school_lessons[lesson[0]]}: {work_types[lesson[1]]}')
-        t.deadline.setDate(lesson[3])
-        t.result.setValue(lesson[-1])   # TODO: check this
-        t.done.setChecked(lesson[-2])
-        window.centralWidget().table_layout.addWidget(t)
+        status_bar.showMessage('Загрузка данных...')
+        add_lesson(lesson)
 
 
-def add():
+def add_button_click():
     time = data.time.time()
     actuality = data.actuality.date()
     deadline = data.deadline.date()
@@ -31,17 +37,20 @@ def add():
         time.hour() * 60 + time.minute(),
         round(data.priority.value(), 2)
     )
-    lessons.add(*args)
-    reload_lessons()
+    p = lessons.add(*args)
+    add_lesson(p)
 
 
 if __name__ == '__main__':
     app = QApplication(argv)
     window = MainWindow()
-    data = window.centralWidget().head_widget
-    data.add_button.clicked.connect(add)
+    contents = window.centralWidget()
+    status_bar = window.statusBar()
+    data = contents.head_widget
+
+    data.add_button.clicked.connect(add_button_click)
     reload_lessons()
     window.show()
-    window.statusBar().showMessage('Готов')
-    status = app.exec()
-    exit(status)
+    status_bar.showMessage('Готов')
+
+    exit(app.exec())

@@ -16,9 +16,9 @@ class LessonQueue:
 
     def __delitem__(self, key):
         self._data.pop(key)
-        self._dump()
+        self.save_data()
 
-    def _dump(self):
+    def save_data(self):
         with open('data/queue', 'wb') as file:
             pickle.dump(self._data, file)
 
@@ -31,18 +31,19 @@ class LessonQueue:
         predict = self.neural.choose_type(lesson).predict(np.array(inputs))[0]
         line = [lesson, work_type, start, end, time, priority, False, predict]  # Memory line
         self._data.append(line)
-        self._dump()
+        self.save_data()
+        return line
 
     def clear(self):
         self._data.clear()
-        self._dump()
+        self.save_data()
 
     def refresh(self):
         self.neural.train()
         for line in self._data:
             inputs = [actual(line[2]), deadline(line[3]), line[4], line[5]]
             line[-1] = self.neural.choose_type(line[0]).predict(np.array(inputs))[0]
-        self._dump()
+        self.save_data()
 
 
 class NNStorage:

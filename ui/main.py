@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QScrollArea, QFrame, QStatusBar, QMenuBar, QMenu,
                              QAction, QGridLayout, QVBoxLayout, qApp)
+from PyQt5.Qt import Qt
 from .head import HeadWidget
 # from table import TableWidget
 
@@ -12,8 +13,7 @@ class _MainWindowContents(QWidget):
         self.table_contents = QWidget()
         self.table_area.setWidget(self.table_contents)
         self.table_layout = QVBoxLayout(self.table_contents)
-        # widget = TableWidget(self.table_contents)
-        # self.verticalLayout.addWidget(widget)
+        self.table_layout.setAlignment(self.table_layout.alignment() | Qt.AlignTop)
         hr = QFrame(self)
         hr.setFrameShape(QFrame.HLine)
         hr.setFrameShadow(QFrame.Sunken)
