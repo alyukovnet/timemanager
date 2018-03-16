@@ -9,13 +9,7 @@ from ui import MainWindow, TableWidget
 from config import STATUS_BAR_TIMEOUT
 
 lessons = LessonQueue()
-
-
-def delete_button_click(self, index):
-    contents.table_layout.removeWidget(self)
-    self.deleteLater()
-    del lessons[index]
-    status_bar.showMessage('Урок удалён', msecs=STATUS_BAR_TIMEOUT)
+_lesson_widgets = []
 
 
 def task_checked(index, state):
@@ -33,9 +27,10 @@ def add_lesson(lesson_dict):
     t.done.setChecked(lesson[-2])
 
     t.done.clicked.connect(partial(task_checked, index))
-    t.delete_button.clicked.connect(partial(delete_button_click, t, index))
+    t.delete_button.clicked.connect(partial(remove_lesson, t, index))
 
     contents.table_layout.addWidget(t)
+    _lesson_widgets.append(t)
     status_bar.showMessage('Новый урок добавлен', msecs=STATUS_BAR_TIMEOUT)
 
 
@@ -43,6 +38,22 @@ def reload_lessons():
     for k, v in lessons.data.items():
         status_bar.showMessage('Загрузка данных...')
         add_lesson({k: v})
+
+
+def remove_lesson(widget, index):
+    contents.table_layout.removeWidget(widget)
+    widget.deleteLater()
+    del lessons[index]
+    status_bar.showMessage('Урок удалён', msecs=STATUS_BAR_TIMEOUT)
+
+
+def remove_lessons():
+    for widget in _lesson_widgets:
+        status_bar.showMessage('Очищаю очередь...')
+        contents.table_layout.removeWidget(widget)
+        widget.deleteLater()
+    lessons.clear()
+    status_bar.showMessage('Очередь очищена', msecs=STATUS_BAR_TIMEOUT)
 
 
 def add_button_click():
@@ -68,6 +79,7 @@ if __name__ == '__main__':
     status_bar = window.statusBar()
     data = contents.head_widget
 
+    window.menuBar().action_queue_clear.triggered.connect(remove_lessons)
     data.add_button.clicked.connect(add_button_click)
     reload_lessons()
     window.show()
