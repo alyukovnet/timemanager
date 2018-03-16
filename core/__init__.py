@@ -9,10 +9,14 @@ class LessonQueue:
     def __init__(self):
         try:
             with open('data/queue', 'rb') as f:
-                self._data = pickle.load(f)
+                self._index, self._data = pickle.load(f)
         except FileNotFoundError:
-            self._data = []
+            self._data = {}
+            self._index = 0
         self.neural = NNStorage()
+
+    def __getitem__(self, item):
+        return self._data.get(item)
 
     def __delitem__(self, key):
         self._data.pop(key)
@@ -20,7 +24,7 @@ class LessonQueue:
 
     def save_data(self):
         with open('data/queue', 'wb') as file:
-            pickle.dump(self._data, file)
+            pickle.dump((self._index, self._data), file)
 
     @property
     def data(self):
@@ -29,8 +33,9 @@ class LessonQueue:
     def add(self, lesson, work_type, start, end, time, priority):
         inputs = [actual(start), deadline(end), time, priority]
         predict = self.neural.choose_type(lesson).predict(np.array(inputs))[0]
-        line = [lesson, work_type, start, end, time, priority, False, predict]  # Memory line
-        self._data.append(line)
+        line = {self._index: [lesson, work_type, start, end, time, priority, False, predict]}
+        self._data.update(line)
+        self._index += 1
         self.save_data()
         return line
 
@@ -40,7 +45,7 @@ class LessonQueue:
 
     def refresh(self):
         self.neural.train()
-        for line in self._data:
+        for line in self._data.values():
             inputs = [actual(line[2]), deadline(line[3]), line[4], line[5]]
             line[-1] = self.neural.choose_type(line[0]).predict(np.array(inputs))[0]
         self.save_data()
