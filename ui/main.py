@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import (QMainWindow, QWidget, QScrollArea, QFrame, QStatusB
                              QAction, QGridLayout, QVBoxLayout, qApp)
 from PyQt5.Qt import Qt
 from .head import HeadWidget
-# from table import TableWidget
 
 
 class _MainWindowContents(QWidget):

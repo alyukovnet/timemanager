@@ -3,13 +3,14 @@ from PyQt5.QtWidgets import QApplication
 from functools import partial
 from datetime import date
 from threading import Thread
-from core import LessonQueue
+from core import LessonQueue, NNStorage
 from core.data import school_lessons, work_types
 from ui import MainWindow, TableWidget
 from config import STATUS_BAR_TIMEOUT
 
 lessons = LessonQueue()
-_lesson_widgets = []
+_lessons_widgets = []
+nn = NNStorage()
 
 
 def task_checked(index, state):
@@ -18,42 +19,47 @@ def task_checked(index, state):
     status_bar.showMessage('Состояние урока изменено успешно', msecs=STATUS_BAR_TIMEOUT)
 
 
-def add_lesson(lesson_dict):
-    index, lesson = list(lesson_dict.keys())[0], list(lesson_dict.values())[0]
-    t = TableWidget(contents.table_contents)
-    t.lesson.setText(f'{school_lessons[lesson[0]]}: {work_types[lesson[1]]}')
-    t.deadline.setDate(lesson[3])
-    t.result.setValue(lesson[-1])  # TODO: check this
-    t.done.setChecked(lesson[-2])
+def load_lessons():
+    global _lessons_widgets
+    _lessons_widgets = []
+    for index, lesson in enumerate(lessons.data):
+        t = TableWidget(contents.table_contents)
+        t.lesson.setText(f'{school_lessons[lesson[0]]}: {work_types[lesson[1]]}')
+        t.deadline.setDate(lesson[3])
+        t.result.setValue(lesson[-1])
+        t.done.setChecked(lesson[-2])
 
-    t.done.clicked.connect(partial(task_checked, index))
-    t.delete_button.clicked.connect(partial(remove_lesson, t, index))
+        t.done.clicked.connect(partial(task_checked, index))
+        t.delete_button.clicked.connect(partial(remove_lesson, t, index))
+        t.save_button.clicked.connect(partial(save_train, index))
 
-    contents.table_layout.addWidget(t)
-    _lesson_widgets.append(t)
-    status_bar.showMessage('Новый урок добавлен', msecs=STATUS_BAR_TIMEOUT)
+        contents.table_layout.addWidget(t)
+        _lessons_widgets.append(t)
+    status_bar.showMessage('Готово', msecs=STATUS_BAR_TIMEOUT)
 
 
 def reload_lessons():
-    for k, v in lessons.data.items():
-        status_bar.showMessage('Загрузка данных...')
-        add_lesson({k: v})
+    status_bar.showMessage('Обновление...', msecs=STATUS_BAR_TIMEOUT)
+    for widget in _lessons_widgets:
+        widget.deleteLater()
+    load_lessons()
 
 
 def remove_lesson(widget, index):
-    contents.table_layout.removeWidget(widget)
     widget.deleteLater()
     del lessons[index]
     status_bar.showMessage('Урок удалён', msecs=STATUS_BAR_TIMEOUT)
+    reload_lessons()
 
 
 def remove_lessons():
-    for widget in _lesson_widgets:
-        status_bar.showMessage('Очищаю очередь...')
-        contents.table_layout.removeWidget(widget)
-        widget.deleteLater()
     lessons.clear()
+    reload_lessons()
     status_bar.showMessage('Очередь очищена', msecs=STATUS_BAR_TIMEOUT)
+
+
+def save_train(index):
+    nn.add(lessons[index])
 
 
 def add_button_click():
@@ -68,8 +74,8 @@ def add_button_click():
         time.hour() * 60 + time.minute(),
         round(data.priority.value(), 2)
     )
-    p = lessons.add(*args)
-    add_lesson(p)
+    lessons.add(*args)
+    reload_lessons()
 
 
 if __name__ == '__main__':
@@ -80,10 +86,14 @@ if __name__ == '__main__':
     data = contents.head_widget
 
     window.menuBar().action_queue_clear.triggered.connect(remove_lessons)
+    window.menuBar().action_clear.triggered.connect(nn.clear)
+    window.menuBar().action_teach.triggered.connect(nn.train)
     data.add_button.clicked.connect(add_button_click)
-    reload_lessons()
+
+    status_bar.showMessage('Загрузка...', msecs=STATUS_BAR_TIMEOUT)
+    load_lessons()
     window.show()
-    status_bar.showMessage('Готов')
+    status_bar.showMessage('Готово', msecs=STATUS_BAR_TIMEOUT)
 
     exit_code = app.exec()
     lessons.save_data()
