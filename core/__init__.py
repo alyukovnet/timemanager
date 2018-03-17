@@ -5,6 +5,10 @@ import numpy as np
 import pickle
 
 
+def sort_by_result(lesson):
+    return lesson[-1]
+
+
 class LessonQueue:
     def __init__(self):
         try:
@@ -31,6 +35,7 @@ class LessonQueue:
         predict = self.neural.choose_type(lesson).predict(np.array(inputs))[0]
         line = [lesson, work_type, start, end, time, priority, False, predict]
         self._data.append(line)
+        self._data.sort(key=sort_by_result, reverse=True)
         self.save_data()
         return line
 
