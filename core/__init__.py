@@ -18,11 +18,14 @@ class LessonQueue:
             self._data = []
         self.neural = NNStorage()
 
+    def __getitem__(self, index):
+        return self._data[index]
+
     def __delitem__(self, key):
         self._data.pop(key)
-        self.save_data()
+        self._dump()
 
-    def save_data(self):
+    def _dump(self):
         with open('data/queue', 'wb') as file:
             pickle.dump(self._data, file)
 
@@ -32,23 +35,22 @@ class LessonQueue:
 
     def add(self, lesson, work_type, start, end, time, priority):
         inputs = [actual(start), deadline(end), time, priority]
-        predict = self.neural.choose_type(lesson).predict(np.array(inputs))[0]
+        predict = self.neural.choose_network_type(lesson).predict(np.array(inputs))[0]
         line = [lesson, work_type, start, end, time, priority, False, predict]
         self._data.append(line)
         self._data.sort(key=sort_by_result, reverse=True)
-        self.save_data()
-        return line
+        self._dump()
 
     def clear(self):
         self._data.clear()
-        self.save_data()
+        self._dump()
 
     def refresh(self):
         self.neural.train()
         for line in self._data:
             inputs = [actual(line[2]), deadline(line[3]), line[4], line[5]]
-            line[-1] = self.neural.choose_type(line[0]).predict(np.array(inputs))[0]
-        self.save_data()
+            line[-1] = self.neural.choose_network_type(line[0]).predict(np.array(inputs))[0]
+        self._dump()
 
 
 class NNStorage:
@@ -61,14 +63,19 @@ class NNStorage:
             self._lessons = [[], [], []]
         self._networks = NeuralNetwork(), NeuralNetwork(), NeuralNetwork()
 
-    def choose_type(self, x):
+    def choose_network_type(self, x):
         for borders, net in neural_types.items():
             if borders[0] <= x <= borders[1]:
                 return self._networks[net]
 
+    def choose_train_type(self, x):
+        for borders, net in neural_types.items():
+            if borders[0] <= x <= borders[1]:
+                return self._lessons[net]
+
     def clear(self):
-        for i in range(len(self._lessons)):
-            self._lessons[i].clear()
+        for net in self._lessons:
+            net.clear()
         self.train()
 
     def train(self):
@@ -82,9 +89,9 @@ class NNStorage:
             pickle.dump(self._lessons, file)
 
     def add(self, queue_line):
-        self.choose_type(queue_line[0]).append([
+        self.choose_train_type(queue_line[0]).append([
             [actual(queue_line[2]), deadline(queue_line[3]), queue_line[4], queue_line[5]],
-            queue_line[6]
+            queue_line[-1]
         ])
         self._dump()
 

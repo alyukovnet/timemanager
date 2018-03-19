@@ -2,15 +2,13 @@ from sys import argv, exit
 from PyQt5.QtWidgets import QApplication
 from functools import partial
 from datetime import date
-from threading import Thread
-from core import LessonQueue, NNStorage
+from core import LessonQueue
 from core.data import school_lessons, work_types
 from ui import MainWindow, TableWidget
 from config import STATUS_BAR_TIMEOUT
 
 lessons = LessonQueue()
 _lessons_widgets = []
-nn = NNStorage()
 
 
 def task_checked(index, state):
@@ -59,7 +57,7 @@ def remove_lessons():
 
 
 def save_train(index):
-    nn.add(lessons[index])
+    lessons.neural.add(lessons[index])
 
 
 def add_button_click():
@@ -86,8 +84,8 @@ if __name__ == '__main__':
     data = contents.head_widget
 
     window.menuBar().action_queue_clear.triggered.connect(remove_lessons)
-    window.menuBar().action_clear.triggered.connect(nn.clear)
-    window.menuBar().action_teach.triggered.connect(nn.train)
+    window.menuBar().action_clear.triggered.connect(lessons.neural.clear)
+    window.menuBar().action_teach.triggered.connect(lessons.neural.train)
     data.add_button.clicked.connect(add_button_click)
 
     status_bar.showMessage('Загрузка...', msecs=STATUS_BAR_TIMEOUT)
@@ -96,5 +94,4 @@ if __name__ == '__main__':
     status_bar.showMessage('Готово', msecs=STATUS_BAR_TIMEOUT)
 
     exit_code = app.exec()
-    lessons.save_data()
     exit(exit_code)
