@@ -5,27 +5,28 @@ import numpy as np
 import pickle
 
 
-def sort_by_result(lesson):
-    return lesson[-1]
+def sort_by_result(task):
+    return task[-1]
 
 
-class LessonQueue:
+class TasksQueue:
     def __init__(self):
         try:
-            with open('data/queue', 'rb') as f:
-                self._data = pickle.load(f)
+            with open('data/queue', 'rb') as file:
+                self._data = pickle.load(file)
         except FileNotFoundError:
             self._data = []
-        self.neural = NNStorage()
+            self.dump()
+        self.neural = NetworkTrain()
 
     def __getitem__(self, index):
         return self._data[index]
 
     def __delitem__(self, key):
         self._data.pop(key)
-        self._dump()
+        self.dump()
 
-    def _dump(self):
+    def dump(self):
         with open('data/queue', 'wb') as file:
             pickle.dump(self._data, file)
 
@@ -35,64 +36,50 @@ class LessonQueue:
 
     def add(self, lesson, work_type, start, end, time, priority):
         inputs = [actual(start), deadline(end), time, priority]
-        predict = self.neural.choose_network_type(lesson).predict(np.array(inputs))[0]
-        line = [lesson, work_type, start, end, time, priority, False, predict]
-        self._data.append(line)
+        predict = self.neural.predict(np.array(inputs))[0]
+        task = [lesson, work_type, start, end, time, priority, False, predict]
+        self._data.append(task)
         self._data.sort(key=sort_by_result, reverse=True)
-        self._dump()
+        self.dump()
 
     def clear(self):
         self._data.clear()
-        self._dump()
+        self.dump()
 
     def refresh(self):
         self.neural.train()
-        for line in self._data:
-            inputs = [actual(line[2]), deadline(line[3]), line[4], line[5]]
-            line[-1] = self.neural.choose_network_type(line[0]).predict(np.array(inputs))[0]
-        self._dump()
+        for task in self._data:
+            inputs = [actual(task[2]), deadline(task[3]), task[4], task[5]]
+            task[-1] = self.neural.predict(np.array(inputs))[0]
+        self.dump()
 
 
-class NNStorage:
+class NetworkTrain:
     def __init__(self):
-        # lessons, networks: phys, chem, gum
         try:
-            with open('data/lessons', 'rb') as f:
-                self._lessons = pickle.load(f)
+            with open('data/trains', 'rb') as file:
+                self._trains = pickle.load(file)
         except FileNotFoundError:
-            self._lessons = [[], [], []]
-        self._networks = NeuralNetwork(), NeuralNetwork(), NeuralNetwork()
-
-    def choose_network_type(self, x):
-        for borders, net in neural_types.items():
-            if borders[0] <= x <= borders[1]:
-                return self._networks[net]
-
-    def choose_train_type(self, x):
-        for borders, net in neural_types.items():
-            if borders[0] <= x <= borders[1]:
-                return self._lessons[net]
+            self._trains = []
+            self._dump()
+        self._net = NeuralNetwork()
 
     def clear(self):
-        for net in self._lessons:
-            net.clear()
+        self._trains.clear()
+        self._dump()
         self.train()
 
-    def train(self):
-        for net, lesson in zip(self._networks, self._lessons):
-            for _ in range(5000):
-                for input_stat, correct_predict in lesson:
-                    net.train(np.array(input_stat), correct_predict)
+    def train(self, epochs=5000):
+        for _ in range(epochs):
+            for inputs, correct_predict in self._trains:
+                self._net.train(np.array(inputs), correct_predict)
 
     def _dump(self):
-        with open('data/lessons', 'wb') as file:
-            pickle.dump(self._lessons, file)
+        with open('data/trains', 'wb') as file:
+            pickle.dump(self._trains, file)
 
-    def add(self, queue_line):
-        self.choose_train_type(queue_line[0]).append([
-            [actual(queue_line[2]), deadline(queue_line[3]), queue_line[4], queue_line[5]],
-            queue_line[-1]
-        ])
+    def add(self, task):
+        self._trains.append([[actual(task[2]), deadline(task[3]), task[4], task[5]], task[-1]])
         self._dump()
 
 
@@ -100,5 +87,5 @@ def actual(date_start):
     return (date.today() - date_start).days
 
 
-def deadline(date_deadline):
-    return (date_deadline - date.today()).days
+def deadline(date_end):
+    return (date_end - date.today()).days
