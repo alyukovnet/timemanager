@@ -29,7 +29,7 @@ def load_tasks():
 
         t.done.clicked.connect(partial(task_checked, index))
         t.delete_button.clicked.connect(partial(remove_lesson, t, index))
-        t.save_button.clicked.connect(partial(save_train, index))
+        t.save_button.clicked.connect(partial(save_train, index, t))
 
         contents.table_layout.addWidget(t)
         _tasks_widget.append(t)
@@ -56,8 +56,9 @@ def remove_lessons():
     status_bar.showMessage('Очередь очищена', msecs=STATUS_BAR_TIMEOUT)
 
 
-def save_train(index):
-    tasks.neural.add(tasks[index])
+def save_train(index, t):
+    new_predict = round(t.result.value(), 2)
+    tasks.neural.add(tasks[index], new_predict)
 
 
 def add_button_click():
@@ -76,6 +77,16 @@ def add_button_click():
     reload_lessons()
 
 
+def action_clear_button():
+    tasks.neural.clear()
+    reload_lessons()
+
+
+def action_teach_button():
+    tasks.refresh()
+    reload_lessons()
+
+
 if __name__ == '__main__':
     app = QApplication(argv)
     window = MainWindow()
@@ -84,8 +95,8 @@ if __name__ == '__main__':
     data = contents.head_widget
 
     window.menuBar().action_queue_clear.triggered.connect(remove_lessons)
-    window.menuBar().action_clear.triggered.connect(tasks.neural.clear)
-    window.menuBar().action_teach.triggered.connect(tasks.neural.train)
+    window.menuBar().action_clear.triggered.connect(action_clear_button)
+    window.menuBar().action_teach.triggered.connect(action_teach_button)
     data.add_button.clicked.connect(add_button_click)
 
     status_bar.showMessage('Загрузка...', msecs=STATUS_BAR_TIMEOUT)

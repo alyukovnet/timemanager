@@ -32,11 +32,12 @@ class TasksQueue:
 
     @property
     def data(self):
+        self._data.sort(key=sort_by_result, reverse=True)
         return self._data
 
     def add(self, lesson, work_type, start, end, time, priority):
         inputs = [actual(start), deadline(end), time, priority]
-        predict = self.neural.predict(np.array(inputs))[0]
+        predict = self.neural.predict(inputs)
         task = [lesson, work_type, start, end, time, priority, False, predict]
         self._data.append(task)
         self._data.sort(key=sort_by_result, reverse=True)
@@ -50,7 +51,8 @@ class TasksQueue:
         self.neural.train()
         for task in self._data:
             inputs = [actual(task[2]), deadline(task[3]), task[4], task[5]]
-            task[-1] = self.neural.predict(np.array(inputs))[0]
+            task[-1] = self.neural.predict(inputs)
+        self._data.sort(key=sort_by_result, reverse=True)
         self.dump()
 
 
@@ -62,7 +64,7 @@ class NetworkTrain:
         except FileNotFoundError:
             self._trains = []
             self._dump()
-        self._net = NeuralNetwork()
+        self._net = NeuralNetwork(learning_rate=0.05)
 
     def clear(self):
         self._trains.clear()
@@ -78,9 +80,12 @@ class NetworkTrain:
         with open('data/trains', 'wb') as file:
             pickle.dump(self._trains, file)
 
-    def add(self, task):
-        self._trains.append([[actual(task[2]), deadline(task[3]), task[4], task[5]], task[-1]])
+    def add(self, task, new_predict):
+        self._trains.append([[actual(task[2]), deadline(task[3]), task[4], task[5]], new_predict])
         self._dump()
+
+    def predict(self, inputs):
+        return self._net.predict(np.array(inputs))[0]
 
 
 def actual(date_start):
